@@ -1,5 +1,4 @@
 """Wrapper utilities for interacting with the Gemini API."""
-from typing import Any
 
 import google.generativeai as genai
 

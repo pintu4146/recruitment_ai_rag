@@ -12,7 +12,7 @@ app.add_middleware(
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 logger.info("Application starting with CHROMA_DIR=%s", settings.CHROMA_DIR)

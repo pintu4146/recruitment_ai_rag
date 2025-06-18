@@ -1,5 +1,4 @@
 import io
-from typing import BinaryIO
 
 import fitz
 from docx import Document
