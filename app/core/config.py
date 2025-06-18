@@ -7,6 +7,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 ENV_PATH = PROJECT_ROOT / ".env.dev"
 load_dotenv(dotenv_path=ENV_PATH)
 
+
 class Settings:
     """Application settings loaded from environment variables."""
 
