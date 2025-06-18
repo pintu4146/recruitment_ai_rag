@@ -12,6 +12,8 @@ This project uses FastAPI + AI to match resumes with job descriptions using LLMs
 - Single resume upload & parsing
 - Sentence-transformer embeddings
 - ChromaDB (local vector store)
+- Cosine similarity scoring out of 100
+- Basic regex-based skill extraction
 - Modular, scalable architecture (LLD + HLD ready)
 
 ---
