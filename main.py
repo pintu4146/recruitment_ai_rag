@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings  # noqa: F401 - imported for side effects
 from app.core.logger import logger
 from app.routes import jd as jd_router
+from app.routes import resume as resume_router
 
 app = FastAPI(title="Recruitment AI RAG System", version="1.0")
 
@@ -18,6 +19,7 @@ app.add_middleware(
 logger.info("Application starting with CHROMA_DIR=%s", settings.CHROMA_DIR)
 
 app.include_router(jd_router.router, prefix="/jd", tags=["jd"])
+app.include_router(resume_router.router, prefix="/resume", tags=["resume"])
 
 
 @app.get("/", tags=["health"])

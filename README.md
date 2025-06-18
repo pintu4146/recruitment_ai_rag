@@ -9,7 +9,7 @@ This project uses FastAPI + AI to match resumes with job descriptions using LLMs
 - FastAPI-based backend
 - LLM-powered JD generation (Gemini + LangChain prompts)
 - Flexible JD generation accepting comma-separated tech stacks
-- Resume parsing & matching
+- Single resume upload & parsing
 - Sentence-transformer embeddings
 - ChromaDB (local vector store)
 - Modular, scalable architecture (LLD + HLD ready)
