@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "recruitment-ai-rag"
+version = "0.1.0"
+description = "Production-ready Recruitment AI app using FastAPI, ChromaDB, Gemini"
+authors = ["pintu Kumar pin21k19@gmail.com"]
+readme = "README.md"
+packages = [{ include = "app" }]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.110"
+uvicorn = "^0.27"
+python-multipart = "^0.0.9"
+pymupdf = "^1.22.3"
+python-docx = "^1.1.0"
+sentence-transformers = "^2.5.1"
+chromadb = "^0.4.22"
+google-generativeai = "^0.3.2"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
