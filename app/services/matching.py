@@ -2,6 +2,7 @@
 
 from typing import Iterable
 import numpy as np
+import mlflow
 
 
 def cosine_score(vec1: Iterable[float], vec2: Iterable[float]) -> float:
@@ -11,4 +12,6 @@ def cosine_score(vec1: Iterable[float], vec2: Iterable[float]) -> float:
     if a.size == 0 or b.size == 0:
         raise ValueError("Vectors must be non-empty")
     score = float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
-    return round(score * 100, 2)
+    score = round(score * 100, 2)
+    mlflow.log_metric("similarity_score", score)
+    return score
