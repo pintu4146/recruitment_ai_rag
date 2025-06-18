@@ -19,6 +19,10 @@ REMARKS_PROMPT_TEMPLATE = PromptTemplate.from_template(
     (PROMPTS_DIR / "remarks_prompt.txt").read_text()
 )
 
+MATCH_PROMPT_TEMPLATE = PromptTemplate.from_template(
+    (PROMPTS_DIR / "matching_prompt.txt").read_text()
+)
+
 
 def generate_job_description(role: str, tech_stack: str | None = None) -> str:
     """Generate a job description for the given role using Gemini."""
@@ -37,4 +41,16 @@ def generate_candidate_remarks(missing: list[str], strong: list[str]) -> str:
     )
     model = genai.GenerativeModel("gemini-pro")
     response = model.generate_content(prompt)
+    return response.text.strip()
+
+
+def assess_resume_with_jd(jd: str, resume: str, *, top_p: float = 0.8) -> str:
+    """Evaluate a resume against a JD and return a short summary."""
+
+    prompt = MATCH_PROMPT_TEMPLATE.format(jd=jd, resume=resume)
+    model = genai.GenerativeModel("gemini-pro")
+    response = model.generate_content(
+        prompt,
+        generation_config={"top_p": top_p},
+    )
     return response.text.strip()
