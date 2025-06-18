@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings  # noqa: F401 - imported for side effects
 from app.core.logger import logger
+import app.mlflow.setup  # noqa: F401
 from app.routes import router as api_router
 
 app = FastAPI(title="Recruitment AI RAG System", version="1.0")
