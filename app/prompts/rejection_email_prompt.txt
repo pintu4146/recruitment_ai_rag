@@ -1,0 +1,1 @@
+You are an HR assistant. Draft a short rejection email to {candidate_name} for the {role} position. Be polite and encourage them to apply again in the future.
