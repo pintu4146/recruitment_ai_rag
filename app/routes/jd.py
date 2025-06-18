@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
 from app.models.jd import JDGenerationRequest
@@ -9,13 +11,17 @@ router = APIRouter()
 
 
 @router.post("/upload")
-async def upload_jd(file: UploadFile = File(...)):
-    """Upload a JD file and return extracted text."""
-    try:
-        text = await extract_text_from_upload(file)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
-    return {"text": text}
+async def upload_jd(files: List[UploadFile] = File(...)):
+    """Upload one or more JD files and return extracted texts."""
+
+    texts: list[str] = []
+    for file in files:
+        try:
+            text = await extract_text_from_upload(file)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc))
+        texts.append(text)
+    return {"texts": texts}
 
 
 @router.post("/generate")
