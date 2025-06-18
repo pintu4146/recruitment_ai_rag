@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.config import settings  # noqa: F401 - imported for side effects
+from app.core.logger import logger
+
 app = FastAPI(title="Recruitment AI RAG System", version="1.0")
 
 app.add_middleware(
@@ -11,6 +14,17 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-@app.get("/")
+logger.info("Application starting with CHROMA_DIR=%s", settings.CHROMA_DIR)
+
+
+@app.get("/", tags=["health"])
 def root():
+    """Basic health check endpoint."""
+    logger.info("Health check accessed")
     return {"message": "Recruitment AI RAG system is running."}
+
+
+@app.get("/health", tags=["health"])
+def healthcheck():
+    """Alias health check endpoint."""
+    return {"status": "ok"}
