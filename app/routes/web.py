@@ -8,7 +8,8 @@ from app.services.embedding import embed_text
 from app.services.matching import cosine_score
 from app.db.chroma_store import get_collection
 from app.llm import assess_resume_with_jd
-from app.llm.output_parser import parse_analysis_response
+from app.llm.output_parser import parse_analysis_response, parse_jd_response
+from app.llm.gemini_wrapper import generate_job_description
 
 from app.core.logger import logger
 
@@ -83,4 +84,43 @@ async def resume_submit(
 
     return templates.TemplateResponse(
         "results.html", {"request": request, "result": response}
+    )
+
+
+@router.get("/jd", response_class=HTMLResponse)
+async def jd_form(request: Request):
+    """Render form to generate a job description."""
+    return templates.TemplateResponse("jd_form.html", {"request": request})
+
+
+@router.post("/jd", response_class=HTMLResponse)
+async def jd_submit(
+    request: Request,
+    job_title: str = Form(...),
+    year_experience: float = Form(...),
+    tech_stack_must_have: str | None = Form(None),
+    good_to_have: str | None = Form(None),
+    company_name: str | None = Form(None),
+    employment_type: str | None = Form(None),
+    industry: str | None = Form(None),
+    location: str | None = Form(None),
+):
+    try:
+        jd_text = generate_job_description(
+            job_title,
+            tech_stack_must_have,
+            company_name,
+            good_to_have,
+            employment_type,
+            industry,
+            location,
+        )
+        parsed = parse_jd_response(jd_text)
+    except Exception as exc:
+        logger.exception("JD generation failed")
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    return templates.TemplateResponse(
+        "jd_results.html",
+        {"request": request, "jd": jd_text, "parsed": parsed},
     )
