@@ -1,4 +1,19 @@
-You are an HR assistant. Generate a detailed job description for the role: {role}.
-if company names are provide incorporate this and try for writing about company: {company_name}.
-If specific technologies are provided, incorporate them into the requirements: {tech_stack}.
-Return concise bullet points.
+You are an HR assistant. Generate a detailed, professional job description with the following details:
+
+- **Role**: {role}
+- **Company Name**: {company_name}
+- **Location**: {location}
+- **Employment Type**: {employment_type}
+- **Industry**: {industry}
+
+### Requirements (Must-Have Skills)
+- {tech_stack}
+
+### Good to Have Skills (Optional)
+- {good_to_have}
+
+ Ensure the tone is professional and the output uses clear, concise bullet points.
+ Mention the company only if the name is provided.
+ Return the output as plain text with proper headings.
+"""
+

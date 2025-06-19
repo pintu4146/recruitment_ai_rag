@@ -11,7 +11,6 @@ from app.mlflow.prompts import PROMPT_REGISTRY
 
 from app.core.config import settings
 
-
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
 PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
@@ -30,18 +29,39 @@ MATCH_PROMPT_TEMPLATE = PromptTemplate.from_template(
 
 
 @mlflow.trace()
-def generate_job_description(role: str, tech_stack: str | None = None, company_name: str | None = None) -> str:
-    """Generate a job description for the given role using Gemini."""
-    logger.info(f"Generating job description for role={role}")
-    prompt = JD_PROMPT_TEMPLATE.format(role=role, tech_stack=tech_stack or "", company_name= company_name or '')
-    mlflow.log_param("prompt", PROMPT_REGISTRY["generate_jd"])
+def generate_job_description(
+        role: str,
+        tech_stack_must_have: str | None = None,
+        company_name: str | None = None,
+        good_to_have: str | None = None,
+        employment_type: str | None = None,
+        industry: str | None = None,
+        location: str | None = None
+) -> str:
+    """Generate a job description using Gemini LLM."""
+
+    logger.info(f"Generating job description for role={role}, company={company_name or 'N/A'}")
+
+    prompt = JD_PROMPT_TEMPLATE.format(
+        role=role,
+        tech_stack=tech_stack_must_have or "Not specified",
+        company_name=company_name or "A reputed company",
+        good_to_have=good_to_have or "N/A",
+        employment_type=employment_type or "Full-time",
+        industry=industry or "General",
+        location=location or "Remote"
+    )
+
+    mlflow.log_param("jd_prompt_template", PROMPT_REGISTRY["generate_jd"])
+
     model = genai.GenerativeModel("gemini-2.0-flash")
+
     try:
         response = model.generate_content(prompt)
-    except Exception:  # broad catch to log unexpected LLM errors
+        return response.text
+    except Exception:
         logger.exception("Gemini JD generation failed")
         raise
-    return response.text
 
 
 @mlflow.trace()
@@ -80,4 +100,3 @@ def assess_resume_with_jd(jd: str, resume: str, *, top_p: float = 0.8) -> str:
         logger.exception("Gemini resume assessment failed")
         raise
     return response.text.strip()
-

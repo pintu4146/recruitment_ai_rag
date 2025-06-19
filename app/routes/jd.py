@@ -31,7 +31,10 @@ async def upload_jd(files: List[UploadFile] = File(...)):
 def generate_jd(payload: JDGenerationRequest):
     """Generate a JD using the Gemini API."""
     try:
-        jd_text = generate_job_description(payload.role, payload.tech_stack, payload.company_name)
+        jd_text = generate_job_description(payload.job_title, payload.tech_stack_must_have
+                                           , payload.company_name, payload.good_to_have
+                                           , payload.employment_type, payload.industry
+                                           , payload.location)
         parsed = parse_jd_response(jd_text)
     except Exception as exc:
         logger.exception("JD generation failed")
