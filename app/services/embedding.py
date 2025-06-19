@@ -3,21 +3,22 @@
 from functools import lru_cache
 from typing import List
 
-from sentence_transformers import SentenceTransformer
-
 from app.core.logger import logger
+from app.core.config import settings
+from app.embedding.factory import get_embedding_encoder
+from app.embedding.encoder import BaseEmbeddingEncoder
 
 
 @lru_cache(maxsize=1)
-def _get_model(model_name: str = "all-MiniLM-L6-v2") -> SentenceTransformer:
-    """Load and cache the sentence transformer model."""
-    logger.debug(f"Loading sentence transformer model: {model_name}")
-    return SentenceTransformer(model_name)
+def _get_encoder() -> BaseEmbeddingEncoder:
+    """Load and cache the configured embedding encoder."""
+    logger.debug(f"Loading embedding encoder: {settings.EMBEDDING_MODEL}")
+    return get_embedding_encoder(settings.EMBEDDING_MODEL)
 
 
 def embed_text(text: str) -> List[float]:
-    """Return embedding vector for a chunk of text."""
+    """Return embedding vector for a chunk of text using the configured encoder."""
     logger.debug("Generating embedding")
-    model = _get_model()
-    embedding = model.encode(text, show_progress_bar=False)
-    return embedding.tolist()
+    encoder = _get_encoder()
+    embedding = encoder.encode(text)
+    return embedding
