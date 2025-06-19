@@ -1,6 +1,5 @@
 """Wrapper utilities for interacting with the Gemini API."""
 
-import google.generativeai as genai
 from pathlib import Path
 from langchain.prompts import PromptTemplate
 import mlflow
@@ -10,7 +9,9 @@ from app.core.logger import logger
 from app.mlflow.prompts import PROMPT_REGISTRY
 
 from app.core.config import settings
+from app.llm.factory import get_retriever_llm
 
+import google.generativeai as genai
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
 PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
@@ -21,10 +22,6 @@ JD_PROMPT_TEMPLATE = PromptTemplate.from_template(
 
 REMARKS_PROMPT_TEMPLATE = PromptTemplate.from_template(
     (PROMPTS_DIR / "remarks_prompt.txt").read_text()
-)
-
-MATCH_PROMPT_TEMPLATE = PromptTemplate.from_template(
-    (PROMPTS_DIR / "matching_prompt.txt").read_text()
 )
 
 
@@ -85,18 +82,14 @@ def generate_candidate_remarks(missing: list[str], strong: list[str]) -> str:
 
 @mlflow.trace()
 def assess_resume_with_jd(jd: str, resume: str, *, top_p: float = 0.8) -> str:
-    """Evaluate a resume against a JD and return a short summary."""
+    """Evaluate a resume against a JD using the configured retriever LLM."""
 
     logger.info("Assessing resume against JD")
-    prompt = MATCH_PROMPT_TEMPLATE.format(jd=jd, resume=resume)
-    mlflow.log_param("prompt", PROMPT_REGISTRY["match_resume"])
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    mlflow.log_param("prompt_template", PROMPT_REGISTRY["match_resume"])
+    llm = get_retriever_llm(settings.RETRIEVAL_MODEL)
     try:
-        response = model.generate_content(
-            prompt,
-            generation_config={"top_p": top_p},
-        )
+        response = llm.generate(jd, resume)
     except Exception:
-        logger.exception("Gemini resume assessment failed")
+        logger.exception("Resume assessment failed")
         raise
-    return response.text.strip()
+    return response.strip()
