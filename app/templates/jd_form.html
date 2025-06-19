@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Generate Job Description{% endblock %}
+{% block content %}
+<h2>Generate Job Description</h2>
+<form action="/web/jd" method="post">
+    <div class="field">
+        <label for="job_title">Job Title</label>
+        <input type="text" id="job_title" name="job_title" required />
+    </div>
+    <div class="field">
+        <label for="year_experience">Years of Experience</label>
+        <input type="number" step="0.1" id="year_experience" name="year_experience" required />
+    </div>
+    <div class="field">
+        <label for="tech_stack_must_have">Must Have Technologies</label>
+        <input type="text" id="tech_stack_must_have" name="tech_stack_must_have" />
+    </div>
+    <div class="field">
+        <label for="good_to_have">Good To Have Technologies</label>
+        <input type="text" id="good_to_have" name="good_to_have" />
+    </div>
+    <div class="field">
+        <label for="company_name">Company Name</label>
+        <input type="text" id="company_name" name="company_name" />
+    </div>
+    <div class="field">
+        <label for="employment_type">Employment Type</label>
+        <input type="text" id="employment_type" name="employment_type" required />
+    </div>
+    <div class="field">
+        <label for="industry">Industry</label>
+        <input type="text" id="industry" name="industry" required />
+    </div>
+    <div class="field">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" required />
+    </div>
+    <button class="btn" type="submit">Generate</button>
+</form>
+{% endblock %}

@@ -84,3 +84,56 @@ async def resume_submit(
     return templates.TemplateResponse(
         "results.html", {"request": request, "result": response}
     )
+
+@router.get("/jd", response_class=HTMLResponse)
+async def jd_form(request: Request):
+    """Display form to generate a job description."""
+    return templates.TemplateResponse("jd_form.html", {"request": request})
+
+
+@router.post("/jd", response_class=HTMLResponse)
+async def jd_generate(
+    request: Request,
+    job_title: str = Form(...),
+    year_experience: float = Form(...),
+    tech_stack_must_have: str | None = Form(None),
+    good_to_have: str | None = Form(None),
+    company_name: str | None = Form(None),
+    employment_type: str = Form(...),
+    industry: str = Form(...),
+    location: str = Form(...),
+):
+    from app.llm.gemini_wrapper import generate_job_description
+    from app.llm.output_parser import parse_jd_response
+    from app.models.jd import JDGenerationRequest
+
+    payload = JDGenerationRequest(
+        job_title=job_title,
+        year_experience=year_experience,
+        tech_stack_must_have=tech_stack_must_have,
+        good_to_have=good_to_have,
+        company_name=company_name,
+        employment_type=employment_type,
+        industry=industry,
+        location=location,
+    )
+
+    try:
+        jd_text = generate_job_description(
+            payload.job_title,
+            payload.tech_stack_must_have,
+            payload.company_name,
+            payload.good_to_have,
+            payload.employment_type,
+            payload.industry,
+            payload.location,
+        )
+        parsed = parse_jd_response(jd_text)
+    except Exception as exc:
+        logger.exception("JD generation failed")
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    return templates.TemplateResponse(
+        "jd_results.html",
+        {"request": request, "jd": jd_text, "parsed": parsed},
+    )

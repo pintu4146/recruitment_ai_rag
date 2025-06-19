@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}JD Results{% endblock %}
+{% block content %}
+<h2>Generated Job Description</h2>
+<pre>{{ jd }}</pre>
+{% if parsed.bullet_points %}
+    <h3>Key Points</h3>
+    <ul>
+        {% for point in parsed.bullet_points %}
+        <li>{{ point }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
