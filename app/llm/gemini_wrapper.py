@@ -30,12 +30,12 @@ MATCH_PROMPT_TEMPLATE = PromptTemplate.from_template(
 
 
 @mlflow.trace()
-def generate_job_description(role: str, tech_stack: str | None = None) -> str:
+def generate_job_description(role: str, tech_stack: str | None = None, company_name: str | None = None) -> str:
     """Generate a job description for the given role using Gemini."""
     logger.info(f"Generating job description for role={role}")
-    prompt = JD_PROMPT_TEMPLATE.format(role=role, tech_stack=tech_stack or "")
+    prompt = JD_PROMPT_TEMPLATE.format(role=role, tech_stack=tech_stack or "", company_name= company_name or '')
     mlflow.log_param("prompt", PROMPT_REGISTRY["generate_jd"])
-    model = genai.GenerativeModel("gemini-pro")
+    model = genai.GenerativeModel("gemini-2.0-flash")
     try:
         response = model.generate_content(prompt)
     except Exception:  # broad catch to log unexpected LLM errors
@@ -54,7 +54,7 @@ def generate_candidate_remarks(missing: list[str], strong: list[str]) -> str:
         strong=", ".join(strong) if strong else "none",
     )
     mlflow.log_param("prompt", PROMPT_REGISTRY["generate_remark"])
-    model = genai.GenerativeModel("gemini-pro")
+    model = genai.GenerativeModel("gemini-2.0-flash")
     try:
         response = model.generate_content(prompt)
     except Exception:
@@ -70,7 +70,7 @@ def assess_resume_with_jd(jd: str, resume: str, *, top_p: float = 0.8) -> str:
     logger.info("Assessing resume against JD")
     prompt = MATCH_PROMPT_TEMPLATE.format(jd=jd, resume=resume)
     mlflow.log_param("prompt", PROMPT_REGISTRY["match_resume"])
-    model = genai.GenerativeModel("gemini-pro")
+    model = genai.GenerativeModel("gemini-2.0-flash")
     try:
         response = model.generate_content(
             prompt,

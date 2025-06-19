@@ -28,7 +28,4 @@ def root():
     return {"message": "Recruitment AI RAG system is running."}
 
 
-@app.get("/health", tags=["health"])
-def healthcheck():
-    """Alias health check endpoint."""
-    return {"status": "ok"}
+

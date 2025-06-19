@@ -7,7 +7,7 @@ class ResumeMetadata(BaseModel):
     candidate_name: str = Field(..., example="John Doe")
     email: EmailStr | None = Field(
         None,
-        example="john.doe@example.com",
+        example="pin21k19@gmail.com",
         description="Candidate contact email",
     )
     notes: str | None = Field(None, example="Referred by Alice")

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pydantic import BaseModel, Field
 
 
@@ -10,3 +12,5 @@ class JDGenerationRequest(BaseModel):
         example="Python, FastAPI, PostgreSQL",
         description="Comma separated list of required technologies",
     )
+    company_name: str | None = Field(None,
+                                     example="E2M")
