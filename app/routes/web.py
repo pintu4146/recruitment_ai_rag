@@ -10,6 +10,8 @@ from app.db.chroma_store import get_collection
 from app.llm import assess_resume_with_jd
 from app.llm.output_parser import parse_analysis_response
 
+from app.core.logger import logger
+
 router = APIRouter()
 
 templates = Jinja2Templates(directory="app/templates")
@@ -35,6 +37,7 @@ async def resume_submit(
     try:
         resume_text = await extract_text_from_upload(file)
     except ValueError as exc:
+        logger.exception("Resume upload failed")
         raise HTTPException(status_code=400, detail=str(exc))
 
     metadata = ResumeMetadata(candidate_name=candidate_name, email=email, notes=notes)
@@ -49,6 +52,7 @@ async def resume_submit(
         try:
             jd_source = await extract_text_from_upload(jd_file)
         except ValueError as exc:
+            logger.exception("JD file upload failed")
             raise HTTPException(status_code=400, detail=str(exc))
     elif jd_text:
         jd_source = jd_text
@@ -63,8 +67,12 @@ async def resume_submit(
         results = collection.query(query_embeddings=[jd_embedding], n_results=top_k)
         retrieved = "\n".join(" ".join(d) for d in results.get("documents", []))
 
-        summary = assess_resume_with_jd(jd_source, retrieved or resume_text, top_p=top_p)
-        parsed_summary = parse_analysis_response(summary)
+        try:
+            summary = assess_resume_with_jd(jd_source, retrieved or resume_text, top_p=top_p)
+            parsed_summary = parse_analysis_response(summary)
+        except Exception as exc:
+            logger.exception("Resume assessment failed")
+            raise HTTPException(status_code=500, detail=str(exc))
 
         response.update(
             jd=jd_source,

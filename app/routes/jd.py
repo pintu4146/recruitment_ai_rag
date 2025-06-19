@@ -2,6 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
+from app.core.logger import logger
+
 from app.models.jd import JDGenerationRequest
 from app.utils.file_parser import extract_text_from_upload
 from app.llm.gemini_wrapper import generate_job_description
@@ -19,6 +21,7 @@ async def upload_jd(files: List[UploadFile] = File(...)):
         try:
             text = await extract_text_from_upload(file)
         except ValueError as exc:
+            logger.exception("JD upload failed")
             raise HTTPException(status_code=400, detail=str(exc))
         texts.append(text)
     return {"texts": texts}
@@ -27,6 +30,10 @@ async def upload_jd(files: List[UploadFile] = File(...)):
 @router.post("/generate")
 def generate_jd(payload: JDGenerationRequest):
     """Generate a JD using the Gemini API."""
-    jd_text = generate_job_description(payload.role, payload.tech_stack)
-    parsed = parse_jd_response(jd_text)
+    try:
+        jd_text = generate_job_description(payload.role, payload.tech_stack)
+        parsed = parse_jd_response(jd_text)
+    except Exception as exc:
+        logger.exception("JD generation failed")
+        raise HTTPException(status_code=500, detail=str(exc))
     return {"jd": jd_text, "parsed": parsed}
