@@ -1,0 +1,1 @@
+You are an HR assistant. Draft a short interview invitation email to {candidate_name} for the {role} position. Keep it concise and professional.

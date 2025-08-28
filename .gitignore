@@ -1,0 +1,17 @@
+# MLflow tracking
+mlruns/
+
+# Chroma vector store
+.chromadb/
+
+# Poetry specific
+poetry.lock
+
+# VS Code / PyCharm / JetBrains
+.idea/
+.vscode/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
