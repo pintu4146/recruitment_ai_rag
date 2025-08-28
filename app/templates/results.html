@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Analysis Results{% endblock %}
+{% block content %}
+<h2>Analysis for {{ result.metadata.candidate_name }}</h2>
+{% if result.similarity is defined %}
+<p><strong>Similarity Score:</strong> {{ result.similarity }}%</p>
+{% endif %}
+{% if result.analysis %}
+<div>
+    <h3>Summary</h3>
+    {% set parsed = result.parsed_analysis %}
+    {% for p in parsed.paragraphs %}
+        <p>{{ p }}</p>
+    {% endfor %}
+    {% if parsed.bullets %}
+    <ul>
+        {% for item in parsed.bullets %}
+        <li>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12"/></svg>
+            {{ item }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
